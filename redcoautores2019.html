@@ -1,0 +1,228 @@
+<html>
+<head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.css" type="text/css" />
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis-network.min.js"> </script>
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+
+<style type="text/css">
+
+        #mynetwork {
+            width: 100%;
+            height: 750px;
+            background-color: #EDE6DB;
+            border: 1px solid lightgray;
+            position: relative;
+            float: left;
+        }
+
+        
+        #loadingBar {
+            position:absolute;
+            top:0px;
+            left:0px;
+            width: 100%;
+            height: 750px;
+            background-color:rgba(200,200,200,0.8);
+            -webkit-transition: all 0.5s ease;
+            -moz-transition: all 0.5s ease;
+            -ms-transition: all 0.5s ease;
+            -o-transition: all 0.5s ease;
+            transition: all 0.5s ease;
+            opacity:1;
+        }
+
+        #bar {
+            position:absolute;
+            top:0px;
+            left:0px;
+            width:20px;
+            height:20px;
+            margin:auto auto auto auto;
+            border-radius:11px;
+            border:2px solid rgba(30,30,30,0.05);
+            background: rgb(0, 173, 246); /* Old browsers */
+            box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
+        }
+
+        #border {
+            position:absolute;
+            top:10px;
+            left:10px;
+            width:500px;
+            height:23px;
+            margin:auto auto auto auto;
+            box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+            border-radius:10px;
+        }
+
+        #text {
+            position:absolute;
+            top:8px;
+            left:530px;
+            width:30px;
+            height:50px;
+            margin:auto auto auto auto;
+            font-size:22px;
+            color: #000000;
+        }
+
+        div.outerBorder {
+            position:relative;
+            top:400px;
+            width:600px;
+            height:44px;
+            margin:auto auto auto auto;
+            border:8px solid rgba(0,0,0,0.1);
+            background: rgb(252,252,252); /* Old browsers */
+            background: -moz-linear-gradient(top,  rgba(252,252,252,1) 0%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(252,252,252,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* IE10+ */
+            background: linear-gradient(to bottom,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* W3C */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+            border-radius:72px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+        }
+        
+
+        
+        #config {
+            float: left;
+            width: 400px;
+            height: 600px;
+        }
+        
+
+        
+</style>
+
+</head>
+
+<body>
+<div id = "mynetwork"></div>
+
+<div id="loadingBar">
+    <div class="outerBorder">
+        <div id="text">0%</div>
+        <div id="border">
+            <div id="bar"></div>
+        </div>
+    </div>
+</div>
+
+
+<div id = "config"></div>
+
+<script type="text/javascript">
+
+    // initialize global variables.
+    var edges;
+    var nodes;
+    var network; 
+    var container;
+    var options, data;
+
+    
+    // This method is responsible for drawing the graph, returns the drawn network
+    function drawGraph() {
+        var container = document.getElementById('mynetwork');
+        
+        
+
+        // parsing and collecting nodes and edges from the python
+        nodes = new vis.DataSet([{"color": "#FFD124", "font": {"color": "black"}, "id": "Andresalvarez", "label": "Andresalvarez", "shape": "dot", "title": "Andresalvarez Neighbors:\u003cbr\u003eHernandoZuleta\u003cbr\u003eAndresM.Guiot\u003cbr\u003eCamiloGomez\u003cbr\u003eAdolfoMeisel\u003cbr\u003eCamiloAcosta\u003cbr\u003eCarlosAndresBrando\u003cbr\u003eJimenaHurtado\u003cbr\u003eRobertKaufman", "value": 8}, {"color": "#FFD124", "font": {"color": "black"}, "id": "JimenaHurtado", "label": "JimenaHurtado", "shape": "dot", "title": "JimenaHurtado Neighbors:\u003cbr\u003eErichPinzonFuchs\u003cbr\u003eAndresM.Guiot\u003cbr\u003eAndresalvarez\u003cbr\u003eAndresMauricioGuiotIsaac", "value": 4}, {"color": "#FFD124", "font": {"color": "black"}, "id": "AndresM.Guiot", "label": "AndresM.Guiot", "shape": "dot", "title": "AndresM.Guiot Neighbors:\u003cbr\u003eAndresalvarez\u003cbr\u003eJimenaHurtado", "value": 2}, {"color": "#a1dab4", "font": {"color": "black"}, "id": "CarlosAndresBrando", "label": "CarlosAndresBrando", "shape": "dot", "title": "CarlosAndresBrando Neighbors:\u003cbr\u003eAndresalvarez", "value": 1}, {"color": "#41b6c4", "font": {"color": "black"}, "id": "AdolfoMeisel", "label": "AdolfoMeisel", "shape": "dot", "title": "AdolfoMeisel Neighbors:\u003cbr\u003eAndresalvarez", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "RobertKaufman", "label": "RobertKaufman", "shape": "dot", "title": "RobertKaufman Neighbors:\u003cbr\u003eAndresalvarez", "value": 1}, {"color": "#FFD124", "font": {"color": "black"}, "id": "HernandoZuleta", "label": "HernandoZuleta", "shape": "dot", "title": "HernandoZuleta Neighbors:\u003cbr\u003ePabloZuleta\u003cbr\u003eDanielaSantos\u003cbr\u003eDanielGamboa\u003cbr\u003eLauraBeatrizGomez\u003cbr\u003eAndresalvarez", "value": 5}, {"color": "#41b6c4", "font": {"color": "black"}, "id": "CamiloGomez", "label": "CamiloGomez", "shape": "dot", "title": "CamiloGomez Neighbors:\u003cbr\u003eAndresalvarez", "value": 1}, {"color": "#41b6c4", "font": {"color": "black"}, "id": "CamiloAcosta", "label": "CamiloAcosta", "shape": "dot", "title": "CamiloAcosta Neighbors:\u003cbr\u003eAndresalvarez", "value": 1}, {"color": "#FFD124", "font": {"color": "black"}, "id": "AndresZambrano", "label": "AndresZambrano", "shape": "dot", "title": "AndresZambrano Neighbors:\u003cbr\u003eNicolasRodriguez", "value": 1}, {"color": "#FFD124", "font": {"color": "black"}, "id": "NicolasRodriguez", "label": "NicolasRodriguez", "shape": "dot", "title": "NicolasRodriguez Neighbors:\u003cbr\u003eAndresZambrano", "value": 1}, {"color": "#FFD124", "font": {"color": "black"}, "id": "DanielMejia", "label": "DanielMejia", "shape": "dot", "title": "DanielMejia Neighbors:\u003cbr\u003eMarcHofstetter\u003cbr\u003eJuanCamiloCastillo\u003cbr\u003eDanielOrtega\u003cbr\u003eEduardoGarcia\u003cbr\u003eHerschelGrossman\u003cbr\u003eNicolasIdrobo\u003cbr\u003ePascualRestrepo\u003cbr\u003eMarcStPierre\u003cbr\u003eSantiagoTobon\u003cbr\u003eDanielaCollazos\u003cbr\u003eMiguelUrrutiaMontoya\u003cbr\u003eDavidBardey\u003cbr\u003eAnaMariaTribin", "value": 13}, {"color": "#FFD124", "font": {"color": "black"}, "id": "DavidBardey", "label": "DavidBardey", "shape": "dot", "title": "DavidBardey Neighbors:\u003cbr\u003eDanielMejia\u003cbr\u003eDavidMartimort\u003cbr\u003eCesarMantilla\u003cbr\u003ePhilippeDeDonder\u003cbr\u003eJeromePouyet\u003cbr\u003eDenisGromb", "value": 6}, {"color": "#FFD124", "font": {"color": "black"}, "id": "MarcHofstetter", "label": "MarcHofstetter", "shape": "dot", "title": "MarcHofstetter Neighbors:\u003cbr\u003eDanielMejia", "value": 1}, {"color": "#FFD124", "font": {"color": "black"}, "id": "MiguelUrrutiaMontoya", "label": "MiguelUrrutiaMontoya", "shape": "dot", "title": "MiguelUrrutiaMontoya Neighbors:\u003cbr\u003eDanielMejia", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "JuanCamiloCastillo", "label": "JuanCamiloCastillo", "shape": "dot", "title": "JuanCamiloCastillo Neighbors:\u003cbr\u003eDanielMejia", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "PascualRestrepo", "label": "PascualRestrepo", "shape": "dot", "title": "PascualRestrepo Neighbors:\u003cbr\u003eDanielMejia", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "NicolasIdrobo", "label": "NicolasIdrobo", "shape": "dot", "title": "NicolasIdrobo Neighbors:\u003cbr\u003eDanielMejia", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "AnaMariaTribin", "label": "AnaMariaTribin", "shape": "dot", "title": "AnaMariaTribin Neighbors:\u003cbr\u003eDanielMejia", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "MarcStPierre", "label": "MarcStPierre", "shape": "dot", "title": "MarcStPierre Neighbors:\u003cbr\u003eDanielMejia", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "HerschelGrossman", "label": "HerschelGrossman", "shape": "dot", "title": "HerschelGrossman Neighbors:\u003cbr\u003eDanielMejia", "value": 1}, {"color": "#41b6c4", "font": {"color": "black"}, "id": "DanielaCollazos", "label": "DanielaCollazos", "shape": "dot", "title": "DanielaCollazos Neighbors:\u003cbr\u003eDanielMejia", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "EduardoGarcia", "label": "EduardoGarcia", "shape": "dot", "title": "EduardoGarcia Neighbors:\u003cbr\u003eDanielMejia", "value": 1}, {"color": "#2c7fb8", "font": {"color": "black"}, "id": "DanielOrtega", "label": "DanielOrtega", "shape": "dot", "title": "DanielOrtega Neighbors:\u003cbr\u003eDanielMejia", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "SantiagoTobon", "label": "SantiagoTobon", "shape": "dot", "title": "SantiagoTobon Neighbors:\u003cbr\u003eDanielMejia", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "DenisGromb", "label": "DenisGromb", "shape": "dot", "title": "DenisGromb Neighbors:\u003cbr\u003eDavidBardey", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "DavidMartimort", "label": "DavidMartimort", "shape": "dot", "title": "DavidMartimort Neighbors:\u003cbr\u003eDavidBardey", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "JeromePouyet", "label": "JeromePouyet", "shape": "dot", "title": "JeromePouyet Neighbors:\u003cbr\u003eDavidBardey", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "PhilippeDeDonder", "label": "PhilippeDeDonder", "shape": "dot", "title": "PhilippeDeDonder Neighbors:\u003cbr\u003eDavidBardey", "value": 1}, {"color": "#41b6c4", "font": {"color": "black"}, "id": "CesarMantilla", "label": "CesarMantilla", "shape": "dot", "title": "CesarMantilla Neighbors:\u003cbr\u003eJuanCamiloCardenas\u003cbr\u003eDavidBardey", "value": 2}, {"color": "#FFD124", "font": {"color": "black"}, "id": "DavidPerez", "label": "DavidPerez", "shape": "dot", "title": "DavidPerez Neighbors:\u003cbr\u003eMotohiroYogo\u003cbr\u003eGuilermoOrdo\u00f1ez\u003cbr\u003eYogoMotohiro\u003cbr\u003eMauricioVillamizarVillegas\u003cbr\u003eGuillermoOrdo\u00f1ez", "value": 5}, {"color": "#41b6c4", "font": {"color": "black"}, "id": "MauricioVillamizarVillegas", "label": "MauricioVillamizarVillegas", "shape": "dot", "title": "MauricioVillamizarVillegas Neighbors:\u003cbr\u003eDavidPerez", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "GuilermoOrdo\u00f1ez", "label": "GuilermoOrdo\u00f1ez", "shape": "dot", "title": "GuilermoOrdo\u00f1ez Neighbors:\u003cbr\u003eDavidPerez", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "YogoMotohiro", "label": "YogoMotohiro", "shape": "dot", "title": "YogoMotohiro Neighbors:\u003cbr\u003eDavidPerez", "value": 1}, {"color": "#FFD124", "font": {"color": "black"}, "id": "FabioSanchez", "label": "FabioSanchez", "shape": "dot", "title": "FabioSanchez Neighbors:\u003cbr\u003eCatherineRodriguez\u003cbr\u003eJulianaLondo\u00f1o", "value": 2}, {"color": "#253494", "font": {"color": "black"}, "id": "JulianaLondo\u00f1o", "label": "JulianaLondo\u00f1o", "shape": "dot", "title": "JulianaLondo\u00f1o Neighbors:\u003cbr\u003eFabioSanchez", "value": 1}, {"color": "#a1dab4", "font": {"color": "black"}, "id": "CatherineRodriguez", "label": "CatherineRodriguez", "shape": "dot", "title": "CatherineRodriguez Neighbors:\u003cbr\u003eFabioSanchez\u003cbr\u003eAdrianaCamacho", "value": 2}, {"color": "#FFD124", "font": {"color": "black"}, "id": "PabloZuleta", "label": "PabloZuleta", "shape": "dot", "title": "PabloZuleta Neighbors:\u003cbr\u003eHernandoZuleta", "value": 1}, {"color": "#41b6c4", "font": {"color": "black"}, "id": "DanielaSantos", "label": "DanielaSantos", "shape": "dot", "title": "DanielaSantos Neighbors:\u003cbr\u003eHernandoZuleta", "value": 1}, {"color": "#FFD124", "font": {"color": "black"}, "id": "DanielGamboa", "label": "DanielGamboa", "shape": "dot", "title": "DanielGamboa Neighbors:\u003cbr\u003eHernandoZuleta", "value": 1}, {"color": "#FFD124", "font": {"color": "black"}, "id": "JorgeH.Maldonado", "label": "JorgeH.Maldonado", "shape": "dot", "title": "JorgeH.Maldonado Neighbors:\u003cbr\u003eRocioMoreno\u003cbr\u003eJuanPabloHenao\u003cbr\u003eDanielRodriguez\u003cbr\u003eLauraVilla\u003cbr\u003eAaronBruner\u003cbr\u003eJohnGomez\u003cbr\u003eVivianaLeonJurado\u003cbr\u003eChristianRozo", "value": 8}, {"color": "#41b6c4", "font": {"color": "black"}, "id": "RocioMoreno", "label": "RocioMoreno", "shape": "dot", "title": "RocioMoreno Neighbors:\u003cbr\u003eJorgeH.Maldonado", "value": 1}, {"color": "#FFD124", "font": {"color": "black"}, "id": "JuanPabloHenao", "label": "JuanPabloHenao", "shape": "dot", "title": "JuanPabloHenao Neighbors:\u003cbr\u003eJorgeH.Maldonado", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "AaronBruner", "label": "AaronBruner", "shape": "dot", "title": "AaronBruner Neighbors:\u003cbr\u003eJorgeH.Maldonado", "value": 1}, {"color": "#FFD124", "font": {"color": "black"}, "id": "ChristianRozo", "label": "ChristianRozo", "shape": "dot", "title": "ChristianRozo Neighbors:\u003cbr\u003eJorgeH.Maldonado", "value": 1}, {"color": "#a1dab4", "font": {"color": "black"}, "id": "VivianaLeonJurado", "label": "VivianaLeonJurado", "shape": "dot", "title": "VivianaLeonJurado Neighbors:\u003cbr\u003eJorgeH.Maldonado", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "JohnGomez", "label": "JohnGomez", "shape": "dot", "title": "JohnGomez Neighbors:\u003cbr\u003eJorgeH.Maldonado", "value": 1}, {"color": "#FFD124", "font": {"color": "black"}, "id": "DanielRodriguez", "label": "DanielRodriguez", "shape": "dot", "title": "DanielRodriguez Neighbors:\u003cbr\u003eJorgeH.Maldonado", "value": 1}, {"color": "#FFD124", "font": {"color": "black"}, "id": "LauraVilla", "label": "LauraVilla", "shape": "dot", "title": "LauraVilla Neighbors:\u003cbr\u003eJorgeH.Maldonado", "value": 1}, {"color": "#FFD124", "font": {"color": "black"}, "id": "JorgeTovar", "label": "JorgeTovar", "shape": "dot", "title": "JorgeTovar Neighbors:\u003cbr\u003eGretchenDonehower\u003cbr\u003eFernandoCarriazo\u003cbr\u003ePiedadUrdinola", "value": 3}, {"color": "#41b6c4", "font": {"color": "black"}, "id": "PiedadUrdinola", "label": "PiedadUrdinola", "shape": "dot", "title": "PiedadUrdinola Neighbors:\u003cbr\u003eJorgeTovar", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "GretchenDonehower", "label": "GretchenDonehower", "shape": "dot", "title": "GretchenDonehower Neighbors:\u003cbr\u003eJorgeTovar", "value": 1}, {"color": "#41b6c4", "font": {"color": "black"}, "id": "FernandoCarriazo", "label": "FernandoCarriazo", "shape": "dot", "title": "FernandoCarriazo Neighbors:\u003cbr\u003eJorgeTovar", "value": 1}, {"color": "#FFD124", "font": {"color": "black"}, "id": "JoseGuerra", "label": "JoseGuerra", "shape": "dot", "title": "JoseGuerra Neighbors:\u003cbr\u003eJinwooKim\u003cbr\u003eSyngjooChoi\u003cbr\u003eBorisGinzburg", "value": 3}, {"color": "#253494", "font": {"color": "black"}, "id": "BorisGinzburg", "label": "BorisGinzburg", "shape": "dot", "title": "BorisGinzburg Neighbors:\u003cbr\u003eJoseGuerra", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "SyngjooChoi", "label": "SyngjooChoi", "shape": "dot", "title": "SyngjooChoi Neighbors:\u003cbr\u003eJoseGuerra", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "JinwooKim", "label": "JinwooKim", "shape": "dot", "title": "JinwooKim Neighbors:\u003cbr\u003eJoseGuerra", "value": 1}, {"color": "#FFD124", "font": {"color": "black"}, "id": "JuanCamiloCardenas", "label": "JuanCamiloCardenas", "shape": "dot", "title": "JuanCamiloCardenas Neighbors:\u003cbr\u003eSantiagoGomez\u003cbr\u003eAnaMariaIba\u00f1ez\u003cbr\u003eAnaArjona\u003cbr\u003eJulianArteaga\u003cbr\u003ePatriciaJustino\u003cbr\u003eCesarMantilla\u003cbr\u003eMariaAlejandraVelez", "value": 7}, {"color": "#FFD124", "font": {"color": "black"}, "id": "MariaAlejandraVelez", "label": "MariaAlejandraVelez", "shape": "dot", "title": "MariaAlejandraVelez Neighbors:\u003cbr\u003eLuzRodriguez\u003cbr\u003eAlexanderPfaff\u003cbr\u003eEsteveCorbera\u003cbr\u003eJuanCamiloCardenas\u003cbr\u003eLinaMoros", "value": 5}, {"color": "#FFD124", "font": {"color": "black"}, "id": "AnaMariaIba\u00f1ez", "label": "AnaMariaIba\u00f1ez", "shape": "dot", "title": "AnaMariaIba\u00f1ez Neighbors:\u003cbr\u003eJuanCamiloCardenas", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "AnaArjona", "label": "AnaArjona", "shape": "dot", "title": "AnaArjona Neighbors:\u003cbr\u003eJuanCamiloCardenas", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "JulianArteaga", "label": "JulianArteaga", "shape": "dot", "title": "JulianArteaga Neighbors:\u003cbr\u003eJuanCamiloCardenas", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "PatriciaJustino", "label": "PatriciaJustino", "shape": "dot", "title": "PatriciaJustino Neighbors:\u003cbr\u003eJuanCamiloCardenas", "value": 1}, {"color": "#FFD124", "font": {"color": "black"}, "id": "LeopoldoFergusson", "label": "LeopoldoFergusson", "shape": "dot", "title": "LeopoldoFergusson Neighbors:\u003cbr\u003eDaronAcemoglu\u003cbr\u003eNelsonA.Ruiz\u003cbr\u003eDarioRomero\u003cbr\u003eSimonJohnson\u003cbr\u003eJuanF.Vargas\u003cbr\u003eJamesA.Robinson\u003cbr\u003eNelsonRuiz\u003cbr\u003ePabloQuerubin", "value": 8}, {"color": "#253494", "font": {"color": "black"}, "id": "PabloQuerubin", "label": "PabloQuerubin", "shape": "dot", "title": "PabloQuerubin Neighbors:\u003cbr\u003eLeopoldoFergusson", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "NelsonA.Ruiz", "label": "NelsonA.Ruiz", "shape": "dot", "title": "NelsonA.Ruiz Neighbors:\u003cbr\u003eLeopoldoFergusson", "value": 1}, {"color": "#41b6c4", "font": {"color": "black"}, "id": "JuanF.Vargas", "label": "JuanF.Vargas", "shape": "dot", "title": "JuanF.Vargas Neighbors:\u003cbr\u003eLeopoldoFergusson", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "DaronAcemoglu", "label": "DaronAcemoglu", "shape": "dot", "title": "DaronAcemoglu Neighbors:\u003cbr\u003eLeopoldoFergusson", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "SimonJohnson", "label": "SimonJohnson", "shape": "dot", "title": "SimonJohnson Neighbors:\u003cbr\u003eLeopoldoFergusson", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "JamesA.Robinson", "label": "JamesA.Robinson", "shape": "dot", "title": "JamesA.Robinson Neighbors:\u003cbr\u003eLeopoldoFergusson", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "DarioRomero", "label": "DarioRomero", "shape": "dot", "title": "DarioRomero Neighbors:\u003cbr\u003eLeopoldoFergusson", "value": 1}, {"color": "#FFD124", "font": {"color": "black"}, "id": "MarcelaEslava", "label": "MarcelaEslava", "shape": "dot", "title": "MarcelaEslava Neighbors:\u003cbr\u003eAlvaroPinzon\u003cbr\u003eRachidLaajaj\u003cbr\u003eJohnHaltiwanger", "value": 3}, {"color": "#253494", "font": {"color": "black"}, "id": "JohnHaltiwanger", "label": "JohnHaltiwanger", "shape": "dot", "title": "JohnHaltiwanger Neighbors:\u003cbr\u003eMarcelaEslava", "value": 1}, {"color": "#FFD124", "font": {"color": "black"}, "id": "AlvaroPinzon", "label": "AlvaroPinzon", "shape": "dot", "title": "AlvaroPinzon Neighbors:\u003cbr\u003eMarcelaEslava", "value": 1}, {"color": "#FFD124", "font": {"color": "black"}, "id": "RachidLaajaj", "label": "RachidLaajaj", "shape": "dot", "title": "RachidLaajaj Neighbors:\u003cbr\u003eJeffPotter\u003cbr\u003eOmarArias\u003cbr\u003eTidianeKinda\u003cbr\u003eSamuelGosling\u003cbr\u003eDanielAlejandroPinzonH.\u003cbr\u003eMarcelaEslava\u003cbr\u003eKarenMacours\u003cbr\u003eRenosVakis\u003cbr\u003eMartaRubio-Codina\u003cbr\u003eDanielAlejandroPinzonHernandez", "value": 10}, {"color": "#253494", "font": {"color": "black"}, "id": "KarenMacours", "label": "KarenMacours", "shape": "dot", "title": "KarenMacours Neighbors:\u003cbr\u003eRachidLaajaj", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "DanielAlejandroPinzonH.", "label": "DanielAlejandroPinzonH.", "shape": "dot", "title": "DanielAlejandroPinzonH. Neighbors:\u003cbr\u003eRachidLaajaj", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "OmarArias", "label": "OmarArias", "shape": "dot", "title": "OmarArias Neighbors:\u003cbr\u003eRachidLaajaj", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "SamuelGosling", "label": "SamuelGosling", "shape": "dot", "title": "SamuelGosling Neighbors:\u003cbr\u003eRachidLaajaj", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "JeffPotter", "label": "JeffPotter", "shape": "dot", "title": "JeffPotter Neighbors:\u003cbr\u003eRachidLaajaj", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "RenosVakis", "label": "RenosVakis", "shape": "dot", "title": "RenosVakis Neighbors:\u003cbr\u003eRachidLaajaj", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "TidianeKinda", "label": "TidianeKinda", "shape": "dot", "title": "TidianeKinda Neighbors:\u003cbr\u003eRachidLaajaj", "value": 1}, {"color": "#FFD124", "font": {"color": "black"}, "id": "RaquelBernal", "label": "RaquelBernal", "shape": "dot", "title": "RaquelBernal Neighbors:\u003cbr\u003eSaraMariaRamirez\u003cbr\u003eTarunDua\u003cbr\u003eMuneeraRasheed\u003cbr\u003eMilagrosNores\u003cbr\u003eKateMilner\u003cbr\u003eKarimManji\u003cbr\u003eVictoriaPonceHardiy\u003cbr\u003eJoyLawn\u003cbr\u003eAlexanderBrentani\u003cbr\u003eKarleeSilver\u003cbr\u003eMelissaGladstone\u003cbr\u003eSunilBhopal\u003cbr\u003eEstherGoh\u003cbr\u003eJenaHamadani\u003cbr\u003eJamesRadner\u003cbr\u003eBettyKirkwood\u003cbr\u003eMayaKohlilynch\u003cbr\u003eCallyTann\u003cbr\u003eSoniaSharma\u003cbr\u003eRobHuges\u003cbr\u003eSteveBarnett", "value": 21}, {"color": "#253494", "font": {"color": "black"}, "id": "KateMilner", "label": "KateMilner", "shape": "dot", "title": "KateMilner Neighbors:\u003cbr\u003eRaquelBernal", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "SunilBhopal", "label": "SunilBhopal", "shape": "dot", "title": "SunilBhopal Neighbors:\u003cbr\u003eRaquelBernal", "value": 1}, {"color": "#2c7fb8", "font": {"color": "black"}, "id": "AlexanderBrentani", "label": "AlexanderBrentani", "shape": "dot", "title": "AlexanderBrentani Neighbors:\u003cbr\u003eRaquelBernal", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "TarunDua", "label": "TarunDua", "shape": "dot", "title": "TarunDua Neighbors:\u003cbr\u003eRaquelBernal", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "MelissaGladstone", "label": "MelissaGladstone", "shape": "dot", "title": "MelissaGladstone Neighbors:\u003cbr\u003eRaquelBernal", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "EstherGoh", "label": "EstherGoh", "shape": "dot", "title": "EstherGoh Neighbors:\u003cbr\u003eRaquelBernal", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "JenaHamadani", "label": "JenaHamadani", "shape": "dot", "title": "JenaHamadani Neighbors:\u003cbr\u003eRaquelBernal", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "RobHuges", "label": "RobHuges", "shape": "dot", "title": "RobHuges Neighbors:\u003cbr\u003eRaquelBernal", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "BettyKirkwood", "label": "BettyKirkwood", "shape": "dot", "title": "BettyKirkwood Neighbors:\u003cbr\u003eRaquelBernal", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "MayaKohlilynch", "label": "MayaKohlilynch", "shape": "dot", "title": "MayaKohlilynch Neighbors:\u003cbr\u003eRaquelBernal", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "KarimManji", "label": "KarimManji", "shape": "dot", "title": "KarimManji Neighbors:\u003cbr\u003eRaquelBernal", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "VictoriaPonceHardiy", "label": "VictoriaPonceHardiy", "shape": "dot", "title": "VictoriaPonceHardiy Neighbors:\u003cbr\u003eRaquelBernal", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "JamesRadner", "label": "JamesRadner", "shape": "dot", "title": "JamesRadner Neighbors:\u003cbr\u003eRaquelBernal", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "MuneeraRasheed", "label": "MuneeraRasheed", "shape": "dot", "title": "MuneeraRasheed Neighbors:\u003cbr\u003eRaquelBernal", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "SoniaSharma", "label": "SoniaSharma", "shape": "dot", "title": "SoniaSharma Neighbors:\u003cbr\u003eRaquelBernal", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "KarleeSilver", "label": "KarleeSilver", "shape": "dot", "title": "KarleeSilver Neighbors:\u003cbr\u003eRaquelBernal", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "CallyTann", "label": "CallyTann", "shape": "dot", "title": "CallyTann Neighbors:\u003cbr\u003eRaquelBernal", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "JoyLawn", "label": "JoyLawn", "shape": "dot", "title": "JoyLawn Neighbors:\u003cbr\u003eRaquelBernal", "value": 1}, {"color": "#41b6c4", "font": {"color": "black"}, "id": "SaraMariaRamirez", "label": "SaraMariaRamirez", "shape": "dot", "title": "SaraMariaRamirez Neighbors:\u003cbr\u003eRaquelBernal", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "MilagrosNores", "label": "MilagrosNores", "shape": "dot", "title": "MilagrosNores Neighbors:\u003cbr\u003eRaquelBernal", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "SteveBarnett", "label": "SteveBarnett", "shape": "dot", "title": "SteveBarnett Neighbors:\u003cbr\u003eRaquelBernal", "value": 1}, {"color": "#41b6c4", "font": {"color": "black"}, "id": "SantiagoGomez", "label": "SantiagoGomez", "shape": "dot", "title": "SantiagoGomez Neighbors:\u003cbr\u003eJuanCamiloCardenas", "value": 1}, {"color": "#FFD124", "font": {"color": "black"}, "id": "AndresMoya", "label": "AndresMoya", "shape": "dot", "title": "AndresMoya Neighbors:\u003cbr\u003eMichaelCarter", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "MichaelCarter", "label": "MichaelCarter", "shape": "dot", "title": "MichaelCarter Neighbors:\u003cbr\u003eAndresMoya", "value": 1}, {"color": "#FFD124", "font": {"color": "black"}, "id": "AlvaroRiascos", "label": "AlvaroRiascos", "shape": "dot", "title": "AlvaroRiascos Neighbors:\u003cbr\u003eMonicaRibero\u003cbr\u003eCarlosDiaz\u003cbr\u003eFranciscoBarreras", "value": 3}, {"color": "#41b6c4", "font": {"color": "black"}, "id": "FranciscoBarreras", "label": "FranciscoBarreras", "shape": "dot", "title": "FranciscoBarreras Neighbors:\u003cbr\u003eAlvaroRiascos", "value": 1}, {"color": "#a1dab4", "font": {"color": "black"}, "id": "CarlosDiaz", "label": "CarlosDiaz", "shape": "dot", "title": "CarlosDiaz Neighbors:\u003cbr\u003eAlvaroRiascos", "value": 1}, {"color": "#41b6c4", "font": {"color": "black"}, "id": "MonicaRibero", "label": "MonicaRibero", "shape": "dot", "title": "MonicaRibero Neighbors:\u003cbr\u003eAlvaroRiascos", "value": 1}, {"color": "#FFD124", "font": {"color": "black"}, "id": "AdrianaCamacho", "label": "AdrianaCamacho", "shape": "dot", "title": "AdrianaCamacho Neighbors:\u003cbr\u003eEmilyConover\u003cbr\u003eCatherineRodriguez", "value": 2}, {"color": "#253494", "font": {"color": "black"}, "id": "LauraBeatrizGomez", "label": "LauraBeatrizGomez", "shape": "dot", "title": "LauraBeatrizGomez Neighbors:\u003cbr\u003eHernandoZuleta", "value": 1}, {"color": "#a1dab4", "font": {"color": "black"}, "id": "LinaMoros", "label": "LinaMoros", "shape": "dot", "title": "LinaMoros Neighbors:\u003cbr\u003eMariaAlejandraVelez", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "EsteveCorbera", "label": "EsteveCorbera", "shape": "dot", "title": "EsteveCorbera Neighbors:\u003cbr\u003eMariaAlejandraVelez", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "AlexanderPfaff", "label": "AlexanderPfaff", "shape": "dot", "title": "AlexanderPfaff Neighbors:\u003cbr\u003eMariaAlejandraVelez", "value": 1}, {"color": "#41b6c4", "font": {"color": "black"}, "id": "LuzRodriguez", "label": "LuzRodriguez", "shape": "dot", "title": "LuzRodriguez Neighbors:\u003cbr\u003eMariaAlejandraVelez", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "EmilyConover", "label": "EmilyConover", "shape": "dot", "title": "EmilyConover Neighbors:\u003cbr\u003eAdrianaCamacho", "value": 1}, {"color": "#FFD124", "font": {"color": "black"}, "id": "AndresAlvarez", "label": "AndresAlvarez", "shape": "dot", "title": "AndresAlvarez Neighbors:\u003cbr\u003eAndresMauricioGuiotIsaac", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "AndresMauricioGuiotIsaac", "label": "AndresMauricioGuiotIsaac", "shape": "dot", "title": "AndresMauricioGuiotIsaac Neighbors:\u003cbr\u003eJimenaHurtado\u003cbr\u003eAndresAlvarez", "value": 2}, {"color": "#253494", "font": {"color": "black"}, "id": "GuillermoOrdo\u00f1ez", "label": "GuillermoOrdo\u00f1ez", "shape": "dot", "title": "GuillermoOrdo\u00f1ez Neighbors:\u003cbr\u003eDavidPerez", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "MotohiroYogo", "label": "MotohiroYogo", "shape": "dot", "title": "MotohiroYogo Neighbors:\u003cbr\u003eDavidPerez", "value": 1}, {"color": "#41b6c4", "font": {"color": "black"}, "id": "ErichPinzonFuchs", "label": "ErichPinzonFuchs", "shape": "dot", "title": "ErichPinzonFuchs Neighbors:\u003cbr\u003eJimenaHurtado", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "NelsonRuiz", "label": "NelsonRuiz", "shape": "dot", "title": "NelsonRuiz Neighbors:\u003cbr\u003eLeopoldoFergusson", "value": 1}, {"color": "#FFD124", "font": {"color": "black"}, "id": "NicolasdeRoux", "label": "NicolasdeRoux", "shape": "dot", "title": "NicolasdeRoux Neighbors:\u003cbr\u003eEvanRiehl", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "EvanRiehl", "label": "EvanRiehl", "shape": "dot", "title": "EvanRiehl Neighbors:\u003cbr\u003eNicolasdeRoux", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "DanielAlejandroPinzonHernandez", "label": "DanielAlejandroPinzonHernandez", "shape": "dot", "title": "DanielAlejandroPinzonHernandez Neighbors:\u003cbr\u003eRachidLaajaj", "value": 1}, {"color": "#253494", "font": {"color": "black"}, "id": "MartaRubio-Codina", "label": "MartaRubio-Codina", "shape": "dot", "title": "MartaRubio-Codina Neighbors:\u003cbr\u003eRachidLaajaj", "value": 1}]);
+        edges = new vis.DataSet([{"color": "#069A8E", "from": "Andresalvarez", "to": "JimenaHurtado"}, {"color": "#069A8E", "from": "Andresalvarez", "to": "AndresM.Guiot"}, {"color": "#069A8E", "from": "Andresalvarez", "to": "CarlosAndresBrando"}, {"color": "#069A8E", "from": "Andresalvarez", "to": "AdolfoMeisel"}, {"color": "#069A8E", "from": "Andresalvarez", "to": "RobertKaufman"}, {"color": "#069A8E", "from": "Andresalvarez", "to": "HernandoZuleta"}, {"color": "#069A8E", "from": "Andresalvarez", "to": "CamiloGomez"}, {"color": "#069A8E", "from": "Andresalvarez", "to": "CamiloAcosta"}, {"color": "#069A8E", "from": "AndresZambrano", "to": "NicolasRodriguez"}, {"color": "#069A8E", "from": "DanielMejia", "to": "DavidBardey"}, {"color": "#069A8E", "from": "DanielMejia", "to": "MarcHofstetter"}, {"color": "#069A8E", "from": "DanielMejia", "to": "MiguelUrrutiaMontoya"}, {"color": "#069A8E", "from": "DanielMejia", "to": "JuanCamiloCastillo"}, {"color": "#069A8E", "from": "DanielMejia", "to": "PascualRestrepo"}, {"color": "#069A8E", "from": "DanielMejia", "to": "NicolasIdrobo"}, {"color": "#069A8E", "from": "DanielMejia", "to": "AnaMariaTribin"}, {"color": "#069A8E", "from": "DanielMejia", "to": "MarcStPierre"}, {"color": "#069A8E", "from": "DanielMejia", "to": "HerschelGrossman"}, {"color": "#069A8E", "from": "DanielMejia", "to": "DanielaCollazos"}, {"color": "#069A8E", "from": "DanielMejia", "to": "EduardoGarcia"}, {"color": "#069A8E", "from": "DanielMejia", "to": "DanielOrtega"}, {"color": "#069A8E", "from": "DanielMejia", "to": "SantiagoTobon"}, {"color": "#069A8E", "from": "DavidBardey", "to": "DenisGromb"}, {"color": "#069A8E", "from": "DavidBardey", "to": "DavidMartimort"}, {"color": "#069A8E", "from": "DavidBardey", "to": "JeromePouyet"}, {"color": "#069A8E", "from": "DavidBardey", "to": "PhilippeDeDonder"}, {"color": "#069A8E", "from": "DavidBardey", "to": "CesarMantilla"}, {"color": "#069A8E", "from": "DavidPerez", "to": "MauricioVillamizarVillegas"}, {"color": "#069A8E", "from": "DavidPerez", "to": "GuilermoOrdo\u00f1ez"}, {"color": "#069A8E", "from": "DavidPerez", "to": "YogoMotohiro"}, {"color": "#069A8E", "from": "FabioSanchez", "to": "JulianaLondo\u00f1o"}, {"color": "#069A8E", "from": "FabioSanchez", "to": "CatherineRodriguez"}, {"color": "#069A8E", "from": "HernandoZuleta", "to": "PabloZuleta"}, {"color": "#069A8E", "from": "HernandoZuleta", "to": "DanielaSantos"}, {"color": "#069A8E", "from": "HernandoZuleta", "to": "DanielGamboa"}, {"color": "#069A8E", "from": "JimenaHurtado", "to": "AndresM.Guiot"}, {"color": "#069A8E", "from": "JorgeH.Maldonado", "to": "RocioMoreno"}, {"color": "#069A8E", "from": "JorgeH.Maldonado", "to": "JuanPabloHenao"}, {"color": "#069A8E", "from": "JorgeH.Maldonado", "to": "AaronBruner"}, {"color": "#069A8E", "from": "JorgeH.Maldonado", "to": "ChristianRozo"}, {"color": "#069A8E", "from": "JorgeH.Maldonado", "to": "VivianaLeonJurado"}, {"color": "#069A8E", "from": "JorgeH.Maldonado", "to": "JohnGomez"}, {"color": "#069A8E", "from": "JorgeH.Maldonado", "to": "DanielRodriguez"}, {"color": "#069A8E", "from": "JorgeH.Maldonado", "to": "LauraVilla"}, {"color": "#069A8E", "from": "JorgeTovar", "to": "PiedadUrdinola"}, {"color": "#069A8E", "from": "JorgeTovar", "to": "GretchenDonehower"}, {"color": "#069A8E", "from": "JorgeTovar", "to": "FernandoCarriazo"}, {"color": "#069A8E", "from": "JoseGuerra", "to": "BorisGinzburg"}, {"color": "#069A8E", "from": "JoseGuerra", "to": "SyngjooChoi"}, {"color": "#069A8E", "from": "JoseGuerra", "to": "JinwooKim"}, {"color": "#069A8E", "from": "JuanCamiloCardenas", "to": "MariaAlejandraVelez"}, {"color": "#069A8E", "from": "JuanCamiloCardenas", "to": "AnaMariaIba\u00f1ez"}, {"color": "#069A8E", "from": "JuanCamiloCardenas", "to": "AnaArjona"}, {"color": "#069A8E", "from": "JuanCamiloCardenas", "to": "JulianArteaga"}, {"color": "#069A8E", "from": "JuanCamiloCardenas", "to": "PatriciaJustino"}, {"color": "#069A8E", "from": "LeopoldoFergusson", "to": "PabloQuerubin"}, {"color": "#069A8E", "from": "LeopoldoFergusson", "to": "NelsonA.Ruiz"}, {"color": "#069A8E", "from": "LeopoldoFergusson", "to": "JuanF.Vargas"}, {"color": "#069A8E", "from": "LeopoldoFergusson", "to": "DaronAcemoglu"}, {"color": "#069A8E", "from": "LeopoldoFergusson", "to": "SimonJohnson"}, {"color": "#069A8E", "from": "LeopoldoFergusson", "to": "JamesA.Robinson"}, {"color": "#069A8E", "from": "LeopoldoFergusson", "to": "DarioRomero"}, {"color": "#069A8E", "from": "MarcelaEslava", "to": "JohnHaltiwanger"}, {"color": "#069A8E", "from": "MarcelaEslava", "to": "AlvaroPinzon"}, {"color": "#069A8E", "from": "RachidLaajaj", "to": "KarenMacours"}, {"color": "#069A8E", "from": "RachidLaajaj", "to": "DanielAlejandroPinzonH."}, {"color": "#069A8E", "from": "RachidLaajaj", "to": "OmarArias"}, {"color": "#069A8E", "from": "RachidLaajaj", "to": "SamuelGosling"}, {"color": "#069A8E", "from": "RachidLaajaj", "to": "JeffPotter"}, {"color": "#069A8E", "from": "RachidLaajaj", "to": "RenosVakis"}, {"color": "#069A8E", "from": "RachidLaajaj", "to": "MarcelaEslava"}, {"color": "#069A8E", "from": "RachidLaajaj", "to": "TidianeKinda"}, {"color": "#069A8E", "from": "RaquelBernal", "to": "KateMilner"}, {"color": "#069A8E", "from": "RaquelBernal", "to": "SunilBhopal"}, {"color": "#069A8E", "from": "RaquelBernal", "to": "AlexanderBrentani"}, {"color": "#069A8E", "from": "RaquelBernal", "to": "TarunDua"}, {"color": "#069A8E", "from": "RaquelBernal", "to": "MelissaGladstone"}, {"color": "#069A8E", "from": "RaquelBernal", "to": "EstherGoh"}, {"color": "#069A8E", "from": "RaquelBernal", "to": "JenaHamadani"}, {"color": "#069A8E", "from": "RaquelBernal", "to": "RobHuges"}, {"color": "#069A8E", "from": "RaquelBernal", "to": "BettyKirkwood"}, {"color": "#069A8E", "from": "RaquelBernal", "to": "MayaKohlilynch"}, {"color": "#069A8E", "from": "RaquelBernal", "to": "KarimManji"}, {"color": "#069A8E", "from": "RaquelBernal", "to": "VictoriaPonceHardiy"}, {"color": "#069A8E", "from": "RaquelBernal", "to": "JamesRadner"}, {"color": "#069A8E", "from": "RaquelBernal", "to": "MuneeraRasheed"}, {"color": "#069A8E", "from": "RaquelBernal", "to": "SoniaSharma"}, {"color": "#069A8E", "from": "RaquelBernal", "to": "KarleeSilver"}, {"color": "#069A8E", "from": "RaquelBernal", "to": "CallyTann"}, {"color": "#069A8E", "from": "RaquelBernal", "to": "JoyLawn"}, {"color": "#069A8E", "from": "RaquelBernal", "to": "SaraMariaRamirez"}, {"color": "#069A8E", "from": "RaquelBernal", "to": "MilagrosNores"}, {"color": "#069A8E", "from": "RaquelBernal", "to": "SteveBarnett"}, {"color": "#069A8E", "from": "JuanCamiloCardenas", "to": "CesarMantilla"}, {"color": "#069A8E", "from": "JuanCamiloCardenas", "to": "SantiagoGomez"}, {"color": "#069A8E", "from": "AndresMoya", "to": "MichaelCarter"}, {"color": "#069A8E", "from": "AlvaroRiascos", "to": "FranciscoBarreras"}, {"color": "#069A8E", "from": "AlvaroRiascos", "to": "CarlosDiaz"}, {"color": "#069A8E", "from": "AlvaroRiascos", "to": "MonicaRibero"}, {"color": "#069A8E", "from": "AdrianaCamacho", "to": "CatherineRodriguez"}, {"color": "#069A8E", "from": "HernandoZuleta", "to": "LauraBeatrizGomez"}, {"color": "#069A8E", "from": "MariaAlejandraVelez", "to": "LinaMoros"}, {"color": "#069A8E", "from": "MariaAlejandraVelez", "to": "EsteveCorbera"}, {"color": "#069A8E", "from": "MariaAlejandraVelez", "to": "AlexanderPfaff"}, {"color": "#069A8E", "from": "MariaAlejandraVelez", "to": "LuzRodriguez"}, {"color": "#069A8E", "from": "AdrianaCamacho", "to": "EmilyConover"}, {"color": "#069A8E", "from": "AndresAlvarez", "to": "AndresMauricioGuiotIsaac"}, {"color": "#069A8E", "from": "DavidPerez", "to": "GuillermoOrdo\u00f1ez"}, {"color": "#069A8E", "from": "DavidPerez", "to": "MotohiroYogo"}, {"color": "#069A8E", "from": "JimenaHurtado", "to": "AndresMauricioGuiotIsaac"}, {"color": "#069A8E", "from": "JimenaHurtado", "to": "ErichPinzonFuchs"}, {"color": "#069A8E", "from": "LeopoldoFergusson", "to": "NelsonRuiz"}, {"color": "#069A8E", "from": "NicolasdeRoux", "to": "EvanRiehl"}, {"color": "#069A8E", "from": "RachidLaajaj", "to": "DanielAlejandroPinzonHernandez"}, {"color": "#069A8E", "from": "RachidLaajaj", "to": "MartaRubio-Codina"}]);
+
+        // adding nodes and edges to the graph
+        data = {nodes: nodes, edges: edges};
+
+        var options = {
+    "configure": {
+        "enabled": true,
+        "filter": [
+            "physics"
+        ]
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": false,
+            "type": "continuous"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "forceAtlas2Based": {
+            "avoidOverlap": 0,
+            "centralGravity": 0.01,
+            "damping": 0.4,
+            "gravitationalConstant": -50,
+            "springConstant": 0.08,
+            "springLength": 100
+        },
+        "solver": "forceAtlas2Based",
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+        
+        
+
+        
+        // if this network requires displaying the configure window,
+        // put it in its div
+        options.configure["container"] = document.getElementById("config");
+        
+
+        network = new vis.Network(container, data, options);
+	 
+        
+
+
+        
+        network.on("stabilizationProgress", function(params) {
+      		document.getElementById('loadingBar').removeAttribute("style");
+	        var maxWidth = 496;
+	        var minWidth = 20;
+	        var widthFactor = params.iterations/params.total;
+	        var width = Math.max(minWidth,maxWidth * widthFactor);
+
+	        document.getElementById('bar').style.width = width + 'px';
+	        document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+	    });
+	    network.once("stabilizationIterationsDone", function() {
+	        document.getElementById('text').innerHTML = '100%';
+	        document.getElementById('bar').style.width = '496px';
+	        document.getElementById('loadingBar').style.opacity = 0;
+	        // really clean the dom element
+	        setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+	    });
+        
+
+        return network;
+
+    }
+
+    drawGraph();
+
+</script>
+</body>
+</html>
